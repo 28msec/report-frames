@@ -116,7 +116,7 @@ let $converted-conditional-rules :=
     for $rule in $rules
     let $condition as string := local:replace($rule.Condition)
     let $formula as string := local:replace($rule.Formula)
-    let $formula-with-fact-trails as string := replace($formula, "[A-Za-z0-9]+", "rules:fact-trail(\\$$1, \"$1\")")
+    let $formula-with-fact-trails as string := replace($formula, "([A-Za-z0-9]+)", "rules:fact-trail(\\$$1, \"$1\")")
     return
     "case "||$condition||"\n
     return\n
