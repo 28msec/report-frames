@@ -5,10 +5,10 @@ declare variable $report external := "COMID-BSC-CF1-ISM-IEMIB-OILY-SPEC6";
 
 declare function local:replace($condition as string) as string
 {
-    let $condition as string := replace($condition, "([a-zA-Z0-9]+) = 0", "not exists(\\$$1)")
+    let $condition as string := replace($condition, "([a-zA-Z0-9]+) = 0", "empty(\\$$1)")
     let $condition as string := replace($condition, "([a-zA-Z0-9]+) <> 0", "exists(\\$$1)")
     let $condition as string := replace($condition, "([a-zA-Z0-9]+)", "rules:decimal-value(\\$$1)")
-    let $condition as string := replace($condition, "rules:decimal-value\\(\\$not\\)", "not")
+    let $condition as string := replace($condition, "rules:decimal-value\\(\\$empty\\)", "empty")
     let $condition as string := replace($condition, "rules:decimal-value\\(\\$exists\\)", "exists")
     let $condition as string := replace($condition, "rules:decimal-value\\(\\$and\\)", "and")
     let $condition as string := replace($condition, "rules:decimal-value\\(\\$or\\)", "or")
@@ -116,7 +116,7 @@ let $converted-conditional-rules :=
     for $rule in $rules
     let $condition as string := local:replace($rule.Condition)
     let $formula as string := local:replace($rule.Formula)
-    let $formula-with-fact-trails as string := replace($formula, "([A-Za-z0-9]+)", "rules:fact-trail(\\$$1, \"$1\")")
+    let $formula-with-fact-trails as string := replace($formula, "rules:decimal-value\\(\\$([A-Za-z0-9]+)\\)", "rules:fact-trail(\\$$1, \"$1\")")
     return
     "case "||$condition||"\n
     return\n
