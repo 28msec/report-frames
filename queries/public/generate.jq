@@ -56,9 +56,10 @@ let $raw-rules :=
         let $formula := if($is-conditional) then replace($individual-rule[3], " *(.+)", "$1") else replace($individual-rule[2], "    (.*)", "$1")
         let $target-concept := replace($formula, " *([A-Za-z]+) = .*", "$1")
         let $formula := replace($formula, " *[A-Za-z0-9]+ = (.*)", "$1")
-        let $other-concepts :=
-          for $token in tokenize($formula, "(=|\\+|-)")
-          return replace($token, " *([A-Za-z]+) *", "$1")
+        let $other-concepts := distinct-values(
+          for $token in (tokenize($formula, "(=|\\+|-)"), tokenize($condition, "( |0|=|\\+|-|<|>)"))
+          where not $token = ("", " ", "and", "or")
+          return replace($token, " *([A-Za-z]+) *", "$1"))
         where count($individual-rule) gt 1
         return {
             Label: $label,
