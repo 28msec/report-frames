@@ -94,7 +94,7 @@ let $converted-conditional-rules :=
     for $duration-string as string? allowing empty in distinct-values($facts[$$.Concept.PeriodType eq \"duration\"].$facts:ASPECTS.$facts:PERIOD)\n
     let $facts := $facts[$$.$facts:ASPECTS.$facts:PERIOD = ($duration-string, $aligned-period)]\n
     let $warnings as string* := ()\n" ||
-    string-join(for $concept in $depends-on
+    string-join(for $concept in ($target-concept, $depends-on)
      return
         "let $"||$concept||" as object* := $facts[$$.$facts:ASPECTS.$facts:CONCEPT eq \"fac:"||$concept||"\"]\n
         let $warnings := ($warnings, if(count($"||$concept||") gt 1)\n
