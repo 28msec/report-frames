@@ -1,6 +1,8 @@
 import module namespace http-client = "http://zorba.io/modules/http-client";
 import module namespace random = "http://zorba.io/modules/random";
 
+declare variable $report external := "COMID-BSC-CF1-ISM-IEMIB-OILY-SPEC6";
+
 declare function local:replace($condition as string) as string
 {
     let $condition as string := replace($condition, "([a-zA-Z0-9]+) = 0", "not exists(\\$$1)")
@@ -16,7 +18,7 @@ declare function local:replace($condition as string) as string
     return $condition
 };
 
-let $text := http-client:get-text("http://www.xbrlsite.com/2015/fro/us-gaap/html/ReportFrames/COMID-BSC-CF1-ISM-IEMIB-OILY-SPEC6/ImputeRules.txt").body.content
+let $text := http-client:get-text("http://www.xbrlsite.com/2015/fro/us-gaap/html/ReportFrames/"||$report||"/ImputeRules.txt").body.content
 let $lines := tokenize($text, "\n")
 for tumbling window $individual-report in $lines
 start $s when starts-with($s, "'XXX")
@@ -78,8 +80,8 @@ let $converted-conditional-rules :=
     "Id" : random:uuid(),
     "OriginalLanguage" : "SpreadsheetFormula",
     "Type" : "xbrl28:formula",
-    "ComputableConcepts" : [ $target-concept ],
-    "DependsOn" : [ $depends-on ],
+    "ComputableConcepts" : [ "fac:"||$target-concept ],
+    "DependsOn" : [ $depends-on ! ("fac:" || $$) ],
     "Formula" : "\n
     for $facts in facts:facts-for-internal((\n" ||
     string-join($depends-on ! ("\"fac:" || $$ || "\""), ", ")
@@ -90,11 +92,11 @@ let $converted-conditional-rules :=
     group by $canonical-filter-string :=\n  facts:canonical-grouping-key($facts, ($facts:CONCEPT, $facts:UNIT, $facts:PERIOD))\n
     , $aligned-period\n
     for $duration-string as string? allowing empty in distinct-values($facts[$$.Concept.PeriodType eq \"duration\"].$facts:ASPECTS.$facts:PERIOD)\n
-    let $facts := $facts[$$.$facts:ASPECTS.$facts:PERIOD = ($duration-string, $aligned-period)]\n" ||
+    let $facts := $facts[$$.$facts:ASPECTS.$facts:PERIOD = ($duration-string, $aligned-period)]\n
+    let $warnings as string* := ()\n" ||
     string-join(for $concept in $depends-on
      return
-        "let $warnings as string* := ()\n
-        let $"||$concept||" as object* := $facts[$$.$facts:ASPECTS.$facts:CONCEPT eq \"fac:"||$concept||"\"]\n
+        "let $"||$concept||" as object* := $facts[$$.$facts:ASPECTS.$facts:CONCEPT eq \"fac:"||$concept||"\"]\n
         let $warnings := ($warnings, if(count($"||$concept||") gt 1)\n
         then if(count(distinct-values($"||$concept||".Value)) gt 1)\n
         then \"Cell collision with conflicting values for concept "||$concept||".\"\n
@@ -118,10 +120,10 @@ let $converted-conditional-rules :=
     return
     "case "||$condition||"\n
     return\n
-        let $computed-value := "||$rule.Formula||"\n
+        let $computed-value := "||$formula||"\n
         let $audit-trail-message as string* := \n
             rules:fact-trail({\"Aspects\": { \"xbrl:Unit\" : $_unit, \"xbrl:Concept\" : \""||$target-concept||"\" }, Value: $computed-value }) || \" = \" || \n
-            $formula-with-fact-trails\n
+            "||$formula-with-fact-trails||"\n
         let $audit-trail-message as string* := ($audit-trail-message, $warnings)\n
         let $source-facts as object* := ("||string-join($depends-on ! ("$" || $$), ", ")||")\n
         let $rule as object :=\n
