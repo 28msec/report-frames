@@ -57,7 +57,7 @@ let $raw-rules :=
         let $target-concept := replace($formula, " *([A-Za-z]+) = .*", "$1")
         let $formula := replace($formula, " *[A-Za-z0-9]+ = (.*)", "$1")
         let $other-concepts := distinct-values(
-          for $token in (tokenize($formula, "(=|\\+|-)"), tokenize($condition, "( |0|=|\\+|-|<|>)"))
+          for $token in (tokenize($formula, "(\\(|\\)|=|\\+|-)"), tokenize($condition, "(\\(|\\)| |0|=|\\+|-|<|>)"))
           where not $token = ("", " ", "and", "or")
           return replace($token, " *([A-Za-z]+) *", "$1"))
         where count($individual-rule) gt 1
@@ -79,6 +79,7 @@ let $converted-conditional-rules :=
   let $source-fact as string := $depends-on[$$ ne $target-concept][1]
   return {
     "Id" : random:uuid(),
+    "Label" : "Computation of " || $target-concept,
     "OriginalLanguage" : "SpreadsheetFormula",
     "Type" : "xbrl28:formula",
     "ComputableConcepts" : [ "fac:"||$target-concept ],
