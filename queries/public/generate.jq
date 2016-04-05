@@ -34,7 +34,7 @@ let $raw-rules :=
         let $label := replace($individual-rule[1], " *'(.*)", "$1")
         let $is-validation := starts-with($label, "VERIFICATION RULES")
         return if($is-validation)
-        then 
+        then
             for $rule in $individual-rule
             where contains($rule, "=")
             let $formula := replace($rule, " *(.+)", "$1")
@@ -50,7 +50,7 @@ let $raw-rules :=
                 TargetConcept: $target-concept,
                 DependsOn: [ $other-concepts ]
             }
-        else 
+        else
         let $is-conditional := starts-with($individual-rule[2], "    If")
         let $condition := if($is-conditional) then replace($individual-rule[2], " *If (.+) Then", "$1") else ""
         let $formula := if($is-conditional) then replace($individual-rule[3], " *(.+)", "$1") else replace($individual-rule[2], "    (.*)", "$1")
@@ -157,7 +157,7 @@ let $converted-conditional-rules :=
         else insert json { \"PeriodType\": \"duration\" } into $newFact(\"Concept\")\n
         )\n
         return $newFact\n"
-        )||"default return ()",
+        )||"default return $"||$target-concept||"\n",
     "Formulae" : [ for $r in $rules return {
       "PrereqSrc" : local:replace($r.Condition),
       "SourceFact" : [ $source-fact ],
@@ -171,7 +171,7 @@ let $converted-conditional-rules :=
   for $rule at $i in $converted-conditional-rules
   let $hidden-rules as string* := $converted-conditional-rules[position() gt $i].Id
   return copy $r := $rule
-         modify insert json { HideRules: [ $hidden-rules ] } into $r
+         modify insert json { HideRules: [ $hidden-rules ], Priority: $i } into $r
          return $r
 return {
     role: $role,
