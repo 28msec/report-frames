@@ -167,6 +167,12 @@ let $converted-conditional-rules :=
     "AllowCrossBalance" : true,
     "HideRulesForConcepts" : [  ]
   }
+let $converted-conditional-rules :=
+  for $rule at $i in $converted-conditional-rules
+  let $hidden-rules as string* := $converted-conditional-rules[position() gt $i].Id
+  return copy $r := $rule
+         modify insert json { HideRules: [ $hidden-rules ] } into $r
+         return $r
 return {
     role: $role,
     label: $label,

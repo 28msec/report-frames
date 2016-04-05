@@ -19,6 +19,6 @@ modify (
           "LastModified" : "2015-04-23T09:34:54.006577Z"
     } into $c,
     replace value of json $c.Rules with [ $c.Rules, $rules.end-rules[] ],
-    replace value of json $c._id with $report||"-"||tokenize($c.Role, "/")[last()]
+    replace value of json $c._id with tokenize($c.Role, "/")[last()]
 )
 return $c ]
