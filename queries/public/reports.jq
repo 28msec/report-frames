@@ -16,7 +16,67 @@ modify (
             "Grantee" : "http://28.io/groups/AllUsers",
             "Permission" : "READ"
           } ],
-          "LastModified" : "2015-04-23T09:34:54.006577Z"
+          "LastModified" : "2015-04-23T09:34:54.006577Z",
+          "DefinitionModels" : [ {
+              "ModelKind" : "DefinitionModel",
+              "Labels" : [ "Fundamental Accounting Concepts" ],
+              "Parameters" : {
+
+              },
+              "Breakdowns" : {
+                "x" : [ {
+                  "BreakdownLabels" : [ "Reporting Entity Breakdown" ],
+                  "BreakdownTrees" : [ {
+                    "Kind" : "Rule",
+                    "Abstract" : true,
+                    "Labels" : [ "Reporting Entity [Axis]" ],
+                    "Children" : [ {
+                      "Kind" : "Aspect",
+                      "Aspect" : "xbrl:Entity"
+                    } ]
+                  } ]
+                }, {
+                  "BreakdownLabels" : [ "Fiscal Year Breakdown" ],
+                  "BreakdownTrees" : [ {
+                    "Kind" : "Rule",
+                    "Abstract" : true,
+                    "Labels" : [ "Fiscal Year [Axis]" ],
+                    "Children" : [ {
+                      "Kind" : "Aspect",
+                      "Aspect" : "xbrl28:FiscalYear"
+                    } ]
+                  } ]
+                }, {
+                  "BreakdownLabels" : [ "Fiscal Period Breakdown" ],
+                  "BreakdownTrees" : [ {
+                    "Kind" : "Rule",
+                    "Abstract" : true,
+                    "Labels" : [ "Fiscal Period [Axis]" ],
+                    "Children" : [ {
+                      "Kind" : "Aspect",
+                      "Aspect" : "xbrl28:FiscalPeriod"
+                    } ]
+                  } ]
+                } ],
+                "y" : [ {
+                  "BreakdownLabels" : [ "Breakdown on concepts" ],
+                  "BreakdownTrees" : [ {
+                    "Kind" : "ConceptRelationship",
+                    "LinkName" : "link:presentationLink",
+                    "LinkRole" : "http://www.xbrlsite.com/2014/Protototype/fac/BalanceSheetClassified",
+                    "ArcName" : "link:presentationArc",
+                    "ArcRole" : "http://www.xbrl.org/2003/arcrole/parent-child",
+                    "RelationshipSource" : $c.Concepts[][$$.Kind eq "LineItems"][1].Name,
+                    "FormulaAxis" : "descendant",
+                    "Generations" : 0
+                  } ]
+                } ]
+              },
+              "TableFilters" : {
+
+              }
+            }
+          ]
     } into $c,
     replace value of json $c.Rules with [ $c.Rules, $rules.end-rules[] ],
     replace value of json $c._id with tokenize($c.Role, "/")[last()]
