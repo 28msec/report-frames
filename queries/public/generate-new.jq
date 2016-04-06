@@ -75,9 +75,7 @@ let $raw-rules :=
             FormulaWithFactTrails: "\"" || replace(local:replace($formula), "rules:decimal-value\\(\\$([A-Za-z0-9]+)\\)", "\"||rules:fact-trail(\\$$1, \"$1\")||\"") || "\""
         }
 let $converted-conditional-rules :=
-  for tumbling window $rules in $raw-rules[$$.Conditional]
-  start when true
-  end $s next $t when $t.TargetConcept ne $s.TargetConcept
+  for $rules in $raw-rules[$$.Conditional]
   let $target-concept as string := distinct-values($rules.TargetConcept)
   let $depends-on := distinct-values($rules.DependsOn[])
   let $source-fact as string := $depends-on[$$ ne $target-concept][1]
