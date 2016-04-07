@@ -15,8 +15,8 @@ declare function local:replace($condition as string) as string
     let $condition as string := replace($condition, "(\\$[a-zA-Z0-9]+)", "rules:decimal-value($1)")
     let $condition as string := replace($condition, "empty\\(rules:decimal-value\\(([^\\)]*)\\)\\)", "empty($1)")
     let $condition as string := replace($condition, "exists\\(rules:decimal-value\\(([^\\)]*)\\)\\)", "exists($1)")
-    let $condition as string := replace($condition, "=", "eq")
-    let $condition as string := replace($condition, "<>", "ne")
+    let $condition as string := replace($condition, "=", " eq ")
+    let $condition as string := replace($condition, "<>", " ne ")
     return $condition
 };
 

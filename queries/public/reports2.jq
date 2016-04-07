@@ -4,8 +4,10 @@ declare variable $report external := "CashFlowStatement";
 
 declare variable $links as object :=
 {
+  "GeneralInformation" : "https://www.dropbox.com/s/7lke55tif1l7zk4/components.json?dl=1",
   "CashFlowStatement" : "https://www.dropbox.com/s/vu5t5448103wq9i/components.json?dl=1",
-  "BalanceSheetClassified" : "https://www.dropbox.com/s/wbyqwvr7ansbxnt/components.json?dl=1"
+  "BalanceSheetClassified" : "https://www.dropbox.com/s/wbyqwvr7ansbxnt/components.json?dl=1",
+      "IncomeStatementSingleStep_Special6" : "https://www.dropbox.com/s/6pdqmcnwjj25rj4/components.json?dl=1"
 };
 
 [
