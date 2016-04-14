@@ -6,7 +6,7 @@ declare namespace xlink = "http://www.w3.org/1999/xlink";
 declare namespace generic = "http://xbrl.org/2008/generic";
 declare namespace va = "http://xbrl.org/2008/assertion/value";
 
-declare variable $report external := "CashFlowStatement";
+declare variable $report external := "BalanceSheetClassified";
 
 declare function local:replace($condition as string) as string
 {
@@ -17,10 +17,11 @@ declare function local:replace($condition as string) as string
     let $condition as string := replace($condition, "exists\\(rules:decimal-value\\(([^\\)]*)\\)\\)", "exists($1)")
     let $condition as string := replace($condition, "=", " eq ")
     let $condition as string := replace($condition, "<>", " ne ")
+    let $condition as string := replace($condition, "/", " div ")
     return $condition
 };
 
-let $base-uri as string := "http://www.xbrlsite.com/2016/fac/v3/ReportingNetworks/"||$report||"_schema.xsd"
+let $base-uri as string := "http://xbrlsite.azurewebsites.net/2016/fac/ReportingNetworks/"||$report||"_schema.xsd"
 let $text := http-client:get-text($base-uri).body.content
 let $schema as node() := parse-xml($text)
 let $raw-rules :=
