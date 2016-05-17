@@ -78,7 +78,7 @@ modify (
             }
           ]
     } into $c,
-    replace value of json $c.Rules with [ $c.Rules, $rules.end-rules[] ],
+    replace value of json $c.Rules with [ $c.Rules[], $rules.end-rules[] ],
     replace value of json $c._id with tokenize($c.Role, "/")[last()]
 )
 return $c ]
